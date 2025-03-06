@@ -16,9 +16,11 @@ conn_str = (
     "Trusted_Connection=yes;"  # Autenticação do Windows
 )
 
+
 # Função para conectar ao banco de dados
 def get_db_connection():
     return pyodbc.connect(conn_str)
+
 
 # Rota para retornar a lista de produtos
 @app.route('/produtos', methods=['GET'])
@@ -52,6 +54,7 @@ def get_produtos():
     except pyodbc.Error as e:
         return jsonify({"error": str(e)}), 500
 
+
 # Rota para atualizar um produto existente
 @app.route('/produtos/<int:id>', methods=['PUT'])
 def update_produto(id):
@@ -68,8 +71,14 @@ def update_produto(id):
         cursor = conn.cursor()
 
         # Executar a atualização no banco de dados
-        cursor.execute(
-            "UPDATE TblProdutos SET NomeProd = ?, PcVenda = ?, Descricao = ?, ImgURL = ? WHERE IdProd = ?",
+        cursor.execute("""
+            UPDATE TblProdutos
+            SET NomeProd = ?,
+            PcVenda = ?,
+            Descricao = ?,
+            ImgURL = ?
+            WHERE IdProd = ?
+            """,
             (nome, preco, descricao, imagem, id)
         )
         conn.commit()
@@ -82,6 +91,7 @@ def update_produto(id):
         return jsonify({"message": "Produto atualizado com sucesso!"}), 200
     except pyodbc.Error as e:
         return jsonify({"error": str(e)}), 500
+
 
 # Rota para adicionar um novo produto
 @app.route('/produtos', methods=['POST'])
@@ -114,6 +124,7 @@ def add_produto():
     except pyodbc.Error as e:
         return jsonify({"error": str(e)}), 500
 
+
 # Rota para excluir um produto
 @app.route('/produtos/<int:id>', methods=['DELETE'])
 def delete_produto(id):
@@ -134,6 +145,7 @@ def delete_produto(id):
         return jsonify({"message": "Produto excluído com sucesso!"}), 200
     except pyodbc.Error as e:
         return jsonify({"error": str(e)}), 500
+
 
 # Iniciar o servidor Flask
 if __name__ == '__main__':
